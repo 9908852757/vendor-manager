@@ -11,11 +11,9 @@
     <!-- SheetJS for Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- Chosen Palette: Professional Blue & Slate -->
-    <!-- Application Structure Plan: The application uses Firebase Email/Password Authentication with role-based access control. The admin user can manage other users. All data is stored in Firestore for real-time, multi-user access. This version is a complete build with all requested features. -->
+    <!-- Application Structure Plan: Final production version. Uses Firebase Email/Password Auth with role-based access. Admin manages users. All data in Firestore. Status feature has been removed as per user request. Simplified and stabilized. -->
     <!-- Visualization & Content Choices: 
-        - Report Info: Role-Based Access. Goal: Secure user management. Viz/Method: A conditional "Manage Users" button and a dedicated modal for adding/removing users, visible only to admins. Justification: Secure and scalable user management.
-        - Report Info: Logout. Goal: Allow users to sign out. Viz/Method: A logout button that calls Firebase's signOut method. Justification: Essential feature for any authenticated application.
-        - Report Info: City Filter. Goal: Organize vendors by location. Viz/Method: A dropdown that dynamically populates with unique cities from the vendor list and filters the displayed data on change. Justification: A highly requested and useful feature for data organization.
+        - Report Info: Removed Status Feature. Goal: Simplify application. Viz/Method: All UI elements and logic related to vendor status have been removed from the app. Justification: Direct user request to streamline the workflow.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -67,7 +65,7 @@
                 </div>
             </header>
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full md:w-auto">
+                <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                     <div class="bg-white p-6 rounded-xl shadow"><h3 class="text-sm font-medium text-slate-500">Total Vendors</h3><p id="total-vendors-stat" class="text-3xl font-bold text-slate-800 mt-2">0</p></div>
                 </section>
                 <div class="w-full md:w-auto md:max-w-xs">
@@ -87,7 +85,7 @@
     <!-- Add/Edit Vendor Modal -->
     <div id="vendor-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50 p-4">
         <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center p-6 border-b"><h2 class="text-2xl font-bold text-blue-800">Add New Vendor</h2><button id="close-modal-btn" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
+            <div class="flex justify-between items-center p-6 border-b"><h2 id="vendor-modal-title" class="text-2xl font-bold text-blue-800">Add New Vendor</h2><button id="close-modal-btn" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
             <div class="p-6 overflow-y-auto"><form id="add-vendor-form"><div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6"><div class="space-y-6"><div><label for="vendorName" class="block text-sm font-medium">Vendor Name (Brand)</label><input type="text" id="vendorName" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm" required></div><div><label for="registeredCompanyName" class="block text-sm font-medium">Registered Company Name</label><input type="text" id="registeredCompanyName" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm"></div><div><label for="cityZone" class="block text-sm font-medium">City / Zone</label><input type="text" id="cityZone" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm" required></div><div><label for="contactNumber" class="block text-sm font-medium">Contact Number</label><input type="tel" id="contactNumber" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm"></div><div><label for="whatsappNumber" class="block text-sm font-medium">WhatsApp Number</label><div class="flex mt-1"><select id="whatsappCountryCode" class="block w-auto px-3 py-2 border border-r-0 rounded-l-md text-sm shadow-sm"></select><input type="tel" id="whatsappNumber" class="block flex-1 px-3 py-2 border rounded-r-md text-sm shadow-sm" placeholder="e.g. 9876543210"></div></div><div class="space-y-4 pt-2"><h3 class="text-md font-semibold border-b pb-2">Company Details</h3><div class="flex items-center justify-between"><label for="yearOfEstablishment" class="text-sm font-medium">Year of Establishment</label><input type="number" id="yearOfEstablishment" placeholder="e.g., 2010" class="w-1/2 mt-1 block px-3 py-2 border rounded-md text-sm shadow-sm"></div><div class="flex items-center justify-between"><span class="text-sm font-medium">GST Registered?</span><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" id="isGstRegistered" class="sr-only"><div class="toggle-bg"></div></div></label></div></div></div><div class="space-y-6"><div class="space-y-4"><h3 class="text-md font-semibold border-b pb-2">Fleet Details</h3><div class="flex items-center justify-between"><span class="text-sm font-medium">Owns Fleet?</span><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" id="hasOwnFleet" class="sr-only"><div class="toggle-bg"></div></div></label></div><div class="flex items-center justify-between"><label for="vehicleCount" class="text-sm font-medium">Total No. of Vehicles</label><input type="number" id="vehicleCount" placeholder="e.g., 25" class="w-1/2 mt-1 block px-3 py-2 border rounded-md text-sm shadow-sm"></div></div><div class="space-y-4"><h3 class="text-md font-semibold border-b pb-2">Vehicle Types & Count</h3><div id="vehicle-types-container" class="space-y-2"></div><div class="flex gap-2 items-center pt-2"><input type="text" id="customVehicleName" placeholder="Custom Type" class="flex-grow block w-full px-3 py-2 border rounded-md text-sm shadow-sm"><input type="number" id="customVehicleCount" placeholder="No." class="w-16 block px-3 py-2 border rounded-md text-sm shadow-sm"><button type="button" id="add-custom-vehicle-btn" class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">+</button></div><div id="custom-vehicle-tags" class="flex flex-wrap gap-2 mt-2"></div></div><div class="pt-4"><label for="notes" class="block text-sm font-medium">Notes / Red Flags</label><textarea id="notes" rows="4" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm"></textarea></div></div></div></form></div>
             <div class="flex justify-end items-center p-6 border-t"><button type="submit" form="add-vendor-form" id="submit-vendor-btn" class="inline-flex justify-center py-2 px-6 border rounded-md text-white bg-blue-600 hover:bg-blue-700">Save Vendor</button></div>
         </div>
@@ -100,13 +98,7 @@
             <div class="p-6 overflow-y-auto">
                 <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-r-lg"><p class="text-sm text-blue-700">Note: Removing a user here revokes their access. For full account deletion, use the Firebase Authentication console.</p></div>
                 <h3 class="text-lg font-semibold mb-4">Add New User</h3>
-                <form id="add-user-form" class="flex gap-4 items-start">
-                    <div class="flex-grow space-y-4">
-                        <input type="email" id="newUserEmail" placeholder="User Email" class="block w-full px-3 py-2 border rounded-md text-sm" required>
-                        <input type="password" id="newUserPassword" placeholder="Password" class="block w-full px-3 py-2 border rounded-md text-sm" required>
-                    </div>
-                    <button type="submit" id="add-user-btn" class="py-2 px-6 border rounded-md text-white bg-blue-600 hover:bg-blue-700">Add User</button>
-                </form>
+                <form id="add-user-form" class="flex gap-4 items-start"><div class="flex-grow space-y-4"><input type="email" id="newUserEmail" placeholder="User Email" class="block w-full px-3 py-2 border rounded-md text-sm" required><input type="password" id="newUserPassword" placeholder="Password" class="block w-full px-3 py-2 border rounded-md text-sm" required></div><button type="submit" id="add-user-btn" class="py-2 px-6 border rounded-md text-white bg-blue-600 hover:bg-blue-700">Add User</button></form>
                 <p id="user-error" class="text-sm text-red-600 mt-2 hidden"></p>
                 <h3 class="text-lg font-semibold mt-8 mb-4">Existing Users</h3>
                 <div id="user-list" class="space-y-2"></div>
@@ -121,7 +113,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
         import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app-check.js";
 
@@ -129,6 +121,7 @@
         const loginPage = document.getElementById('login-page'), dashboardPage = document.getElementById('dashboard-page'), loginForm = document.getElementById('login-form'), loginError = document.getElementById('login-error');
         const addVendorForm = document.getElementById('add-vendor-form'), vendorListContainer = document.getElementById('vendor-list-container'), emptyState = document.getElementById('empty-state');
         const vendorModal = document.getElementById('vendor-modal'), openModalBtn = document.getElementById('open-modal-btn'), closeModalBtn = document.getElementById('close-modal-btn');
+        const vendorModalTitle = document.getElementById('vendor-modal-title'), submitVendorBtn = document.getElementById('submit-vendor-btn');
         const exportBtn = document.getElementById('export-btn'), loadingOverlay = document.getElementById('loading-overlay'), countryCodeSelect = document.getElementById('whatsappCountryCode');
         const confirmModal = document.getElementById('confirm-modal'), confirmRemoveBtn = document.getElementById('confirm-remove-btn'), cancelRemoveBtn = document.getElementById('cancel-remove-btn');
         const confirmTitle = document.getElementById('confirm-title'), confirmText = document.getElementById('confirm-text');
@@ -144,54 +137,35 @@
             storageBucket: "vendor-manager-a8ede.appspot.com", messagingSenderId: "689330927875", appId: "1:689330927875:web:e52e9cb02132dab4af5136"
         };
         
-        let db, auth, vendorsCollection, usersCollection, allVendors = [], users = [], tempCustomVehicles = [], itemToDelete = {id: null, type: null};
+        let db, auth, vendorsCollection, usersCollection, allVendors = [], users = [], tempCustomVehicles = [], itemToDelete = {id: null, type: null}, editVendorId = null;
         let unsubscribeVendors = () => {}, unsubscribeUsers = () => {};
         const standardVehicleTypes = ['Sedan', 'SUV', 'Ertiga', 'Crysta', 'Tempo Traveller', 'Bus'];
         
         const app = initializeApp(firebaseConfig);
-
-        try {
-            const appCheck = initializeAppCheck(app, {
-                provider: new ReCaptchaV3Provider('YOUR_RECAPTCHA_V3_SITE_KEY_HERE'),
-                isTokenAutoRefreshEnabled: true
-            });
-        } catch(e) {
-            console.warn("App Check initialization failed. This may be because you haven't configured it yet. If you see permission errors, this is the likely cause.");
-        }
-
+        try { const appCheck = initializeAppCheck(app, { provider: new ReCaptchaV3Provider('YOUR_RECAPTCHA_V3_SITE_KEY_HERE'), isTokenAutoRefreshEnabled: true }); } catch(e) { console.warn("App Check initialization failed."); }
         auth = getAuth(app);
         db = getFirestore(app);
 
         onAuthStateChanged(auth, async (user) => {
             unsubscribeVendors();
             unsubscribeUsers();
-
             if (user) {
                 loadingOverlay.classList.remove('hidden');
                 try {
                     const userDocRef = doc(db, "users", user.uid);
                     const userDoc = await getDoc(userDocRef);
                     const userRole = userDoc.exists() ? userDoc.data().role.trim() : 'user';
-
                     loginPage.classList.add('hidden');
                     dashboardPage.classList.remove('hidden');
                     userWelcome.textContent = `Welcome, ${user.email}`;
-                    if (userRole === 'admin') {
-                        manageUsersBtn.classList.remove('hidden');
-                    } else {
-                        manageUsersBtn.classList.add('hidden');
-                    }
-                    
+                    if (userRole === 'admin') manageUsersBtn.classList.remove('hidden'); else manageUsersBtn.classList.add('hidden');
                     vendorsCollection = collection(db, "vendors");
                     listenForVendors();
                     if (userRole === 'admin') {
                         usersCollection = collection(db, "users");
                         listenForUsers();
                     }
-                } catch (error) {
-                    console.error("Firebase post-auth error:", error);
-                    loadingOverlay.innerHTML = `<div class="text-center p-4 bg-red-100 text-red-700 rounded-lg max-w-lg mx-auto"><p class="font-bold">Access Denied</p><p class="text-sm mt-2">Could not verify user role. This is often caused by Firestore Security Rules or a missing App Check configuration. Please check the console for details.</p></div>`;
-                }
+                } catch (error) { console.error("Firebase post-auth error:", error); loadingOverlay.innerHTML = `<div class="text-center p-4 bg-red-100 text-red-700 rounded-lg max-w-lg mx-auto"><p class="font-bold">Access Denied</p><p class="text-sm mt-2">Could not verify user role. Check Firestore rules and console.</p></div>`; }
             } else {
                 loginPage.classList.remove('hidden');
                 dashboardPage.classList.add('hidden');
@@ -200,7 +174,7 @@
         });
 
         loginForm.addEventListener('submit', (e) => { e.preventDefault(); const email = document.getElementById('email').value, password = document.getElementById('password').value; signInWithEmailAndPassword(auth, email, password).catch(error => { loginError.textContent = "Invalid email or password."; loginError.classList.remove('hidden'); }); });
-        logoutBtn.addEventListener('click', () => signOut(auth));
+        logoutBtn.addEventListener('click', () => { unsubscribeVendors(); unsubscribeUsers(); signOut(auth); });
         
         const countryCodes = [ { name: 'India', code: '91' }, { name: 'USA', code: '1' }, { name: 'UK', code: '44' }, { name: 'Australia', code: '61' }, { name: 'Singapore', code: '65' }, { name: 'UAE', code: '971' }, { name: 'Afghanistan', code: '93' }, { name: 'Albania', code: '355' }, { name: 'Algeria', code: '213' }, { name: 'Andorra', code: '376' }, { name: 'Angola', code: '244' }, { name: 'Argentina', code: '54' }, { name: 'Armenia', code: '374' }, { name: 'Austria', code: '43' }, { name: 'Azerbaijan', code: '994' }, { name: 'Bahrain', code: '973' }, { name: 'Bangladesh', code: '880' }, { name: 'Belarus', code: '375' }, { name: 'Belgium', code: '32' }, { name: 'Bhutan', code: '975' }, { name: 'Brazil', code: '55' }, { name: 'Canada', code: '1' }, { name: 'China', code: '86' }, { name: 'Egypt', code: '20' }, { name: 'France', code: '33' }, { name: 'Germany', code: '49' }, { name: 'Indonesia', code: '62' }, { name: 'Iran', code: '98' }, { name: 'Italy', code: '39' }, { name: 'Japan', code: '81' }, { name: 'Malaysia', code: '60' }, { name: 'Maldives', code: '960' }, { name: 'Mexico', code: '52' }, { name: 'Nepal', code: '977' }, { name: 'Netherlands', code: '31' }, { name: 'New Zealand', code: '64' }, { name: 'Nigeria', code: '234' }, { name: 'Oman', code: '968' }, { name: 'Pakistan', code: '92' }, { name: 'Qatar', code: '974' }, { name: 'Russia', code: '7' }, { name: 'Saudi Arabia', code: '966' }, { name: 'South Africa', code: '27' }, { name: 'Sri Lanka', code: '94' }, { name: 'Switzerland', code: '41' }, { name: 'Thailand', code: '66' }, { name: 'Turkey', code: '90' }, { name: 'Vietnam', code: '84' } ];
         function populateCountryCodes() { countryCodeSelect.innerHTML = ''; countryCodes.sort((a, b) => a.name.localeCompare(b.name)); const india = countryCodes.find(c => c.code === '91'); const others = countryCodes.filter(c => c.code !== '91'); const sortedCountries = [india, ...others]; sortedCountries.forEach(country => { const option = document.createElement('option'); option.value = country.code; option.textContent = `${country.name} (+${country.code})`; if (country.code === '91') option.selected = true; countryCodeSelect.appendChild(option); }); }
@@ -212,12 +186,7 @@
             const currentSelection = cityFilter.value;
             const cities = [...new Set(vendors.map(v => v.cityZone).filter(Boolean))].sort();
             cityFilter.innerHTML = '<option value="all">All Cities</option>';
-            cities.forEach(city => {
-                const option = document.createElement('option');
-                option.value = city;
-                option.textContent = city;
-                cityFilter.appendChild(option);
-            });
+            cities.forEach(city => { const option = document.createElement('option'); option.value = city; option.textContent = city; cityFilter.appendChild(option); });
             cityFilter.value = currentSelection;
         }
 
@@ -229,11 +198,11 @@
 
         cityFilter.addEventListener('change', applyCityFilter);
 
-        const initializeVehicleForm = () => { vehicleTypesContainer.innerHTML = ''; standardVehicleTypes.forEach(type => { const div = document.createElement('div'); div.className = 'flex items-center justify-between gap-2'; div.innerHTML = `<label class="text-sm text-slate-600">${type}</label><div class="flex items-center gap-2"><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" data-type="${type}" class="sr-only vehicle-type-checkbox"><div class="toggle-bg"></div></div></label><input type="number" data-type-count="${type}" placeholder="No." class="w-20 mt-1 block px-3 py-1 bg-white border border-slate-300 rounded-md text-sm shadow-sm" disabled></div>`; vehicleTypesContainer.appendChild(div); }); tempCustomVehicles = []; customVehicleTagsContainer.innerHTML = ''; };
+        const initializeVehicleForm = (vehicleTypes = []) => { vehicleTypesContainer.innerHTML = ''; standardVehicleTypes.forEach(type => { const existing = vehicleTypes.find(v => v.type === type); const div = document.createElement('div'); div.className = 'flex items-center justify-between gap-2'; div.innerHTML = `<label class="text-sm text-slate-600">${type}</label><div class="flex items-center gap-2"><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" data-type="${type}" class="sr-only vehicle-type-checkbox" ${existing ? 'checked' : ''}><div class="toggle-bg"></div></div></label><input type="number" data-type-count="${type}" placeholder="No." class="w-20 mt-1 block px-3 py-1 bg-white border border-slate-300 rounded-md text-sm shadow-sm" value="${existing ? existing.count : ''}" ${!existing ? 'disabled' : ''}></div>`; vehicleTypesContainer.appendChild(div); }); tempCustomVehicles = vehicleTypes.filter(v => !standardVehicleTypes.includes(v.type)); renderCustomVehicleTags(); };
         
-        const updateDashboardStats = (vendorList) => { totalVendorsStat.textContent = vendorList.length; };
+        const updateDashboardStats = (vendorList) => { totalVendorsStat.textContent = vendorList.length;};
         
-        const renderVendors = (vendorList) => { vendorListContainer.innerHTML = ''; if (vendorList.length === 0) { emptyState.classList.remove('hidden'); } else { emptyState.classList.add('hidden'); vendorList.forEach((vendor) => { const vehicleListHTML = vendor.vehicleTypes && vendor.vehicleTypes.length > 0 ? vendor.vehicleTypes.map(v => `<li class="flex justify-between"><span>${v.type}</span><span class="font-medium bg-slate-100 px-2 rounded-md">${v.count}</span></li>`).join('') : '<li class="text-slate-500">Not specified</li>'; const contactHTML = `${vendor.contactNumber ? `<a href="tel:${vendor.contactNumber}" class="text-blue-600 hover:underline">${vendor.contactNumber}</a>` : ''}${vendor.contactNumber && vendor.whatsappNumber ? `<span class="text-slate-400 mx-1">|</span>` : ''}${vendor.whatsappNumber ? `<a href="https://wa.me/${vendor.whatsappNumber.replace(/[^0-9]/g, '')}" target="_blank" class="text-green-600 hover:underline">${vendor.whatsappNumber} (WA)</a>` : ''}${!vendor.contactNumber && !vendor.whatsappNumber ? `<span class="text-slate-500">Not provided</span>` : ''}`; const card = `<div class="bg-white p-6 rounded-xl shadow flex flex-col"><div class="flex-grow"><div class="mb-4"><h3 class="text-lg font-bold text-slate-800">${vendor.vendorName}</h3><p class="text-sm text-slate-500">${vendor.cityZone}</p><p class="text-sm mt-2">${contactHTML}</p></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-4 text-sm"><div class="space-y-2"><h4 class="font-semibold text-slate-600 border-b pb-1">Company</h4><div class="flex justify-between"><span>Registered:</span> <span class="font-semibold text-right truncate" title="${vendor.registeredCompanyName || ''}">${vendor.registeredCompanyName || 'N/A'}</span></div><div class="flex justify-between"><span>Established:</span> <span class="font-semibold">${vendor.yearOfEstablishment || 'N/A'}</span></div><div class="flex justify-between"><span>GST Registered:</span> <span class="font-semibold">${vendor.isGstRegistered ? 'Yes' : 'No'}</span></div></div><div class="space-y-2"><h4 class="font-semibold text-slate-600 border-b pb-1">Fleet</h4><div class="flex justify-between"><span>Owns Fleet:</span> <span class="font-semibold">${vendor.hasOwnFleet ? 'Yes' : 'No'}</span></div><div class="flex justify-between"><span>Total Vehicles:</span> <span class="font-semibold">${vendor.vehicleCount || 'N/A'}</span></div></div></div><div class="mb-4"><h4 class="text-sm font-semibold text-slate-600 border-b pb-1 mb-2">Vehicle Types</h4><ul class="text-sm space-y-1 text-slate-700 max-h-24 overflow-y-auto pr-2">${vehicleListHTML}</ul></div>${vendor.notes ? `<div class="mt-4 pt-2 border-t border-slate-200"><h4 class="text-sm font-semibold text-slate-600">Notes:</h4><p class="text-sm text-slate-600 whitespace-pre-wrap">${vendor.notes}</p></div>` : ''}</div><div class="mt-6 text-right"><button data-id="${vendor.id}" class="remove-btn text-sm font-medium text-red-600 hover:text-red-800">Remove Vendor</button></div></div>`; vendorListContainer.innerHTML += card; }); } updateDashboardStats(vendorList); };
+        const renderVendors = (vendorList) => { vendorListContainer.innerHTML = ''; if (vendorList.length === 0) { emptyState.classList.remove('hidden'); } else { emptyState.classList.add('hidden'); vendorList.forEach((vendor) => { const vehicleListHTML = vendor.vehicleTypes && vendor.vehicleTypes.length > 0 ? vendor.vehicleTypes.map(v => `<li class="flex justify-between"><span>${v.type}</span><span class="font-medium bg-slate-100 px-2 rounded-md">${v.count}</span></li>`).join('') : '<li class="text-slate-500">Not specified</li>'; const contactHTML = `${vendor.contactNumber ? `<a href="tel:${vendor.contactNumber}" class="text-blue-600 hover:underline">${vendor.contactNumber}</a>` : ''}${vendor.contactNumber && vendor.whatsappNumber ? `<span class="text-slate-400 mx-1">|</span>` : ''}${vendor.whatsappNumber ? `<a href="https://wa.me/${vendor.whatsappNumber.replace(/[^0-9]/g, '')}" target="_blank" class="text-green-600 hover:underline">${vendor.whatsappNumber} (WA)</a>` : ''}${!vendor.contactNumber && !vendor.whatsappNumber ? `<span class="text-slate-500">Not provided</span>` : ''}`; const card = `<div class="bg-white p-6 rounded-xl shadow flex flex-col"><div class="flex-grow"><div class="flex justify-between items-start mb-4"><div><h3 class="text-lg font-bold text-slate-800">${vendor.vendorName}</h3><p class="text-sm text-slate-500">${vendor.cityZone}</p><p class="text-sm mt-2">${contactHTML}</p></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-4 text-sm"><div class="space-y-2"><h4 class="font-semibold text-slate-600 border-b pb-1">Company</h4><div class="flex justify-between"><span>Registered:</span> <span class="font-semibold text-right truncate" title="${vendor.registeredCompanyName || ''}">${vendor.registeredCompanyName || 'N/A'}</span></div><div class="flex justify-between"><span>Established:</span> <span class="font-semibold">${vendor.yearOfEstablishment || 'N/A'}</span></div><div class="flex justify-between"><span>GST Registered:</span> <span class="font-semibold">${vendor.isGstRegistered ? 'Yes' : 'No'}</span></div></div><div class="space-y-2"><h4 class="font-semibold text-slate-600 border-b pb-1">Fleet</h4><div class="flex justify-between"><span>Owns Fleet:</span> <span class="font-semibold">${vendor.hasOwnFleet ? 'Yes' : 'No'}</span></div><div class="flex justify-between"><span>Total Vehicles:</span> <span class="font-semibold">${vendor.vehicleCount || 'N/A'}</span></div></div></div><div class="mb-4"><h4 class="text-sm font-semibold text-slate-600 border-b pb-1 mb-2">Vehicle Types</h4><ul class="text-sm space-y-1 text-slate-700 max-h-24 overflow-y-auto pr-2">${vehicleListHTML}</ul></div>${vendor.notes ? `<div class="mt-4 pt-2 border-t border-slate-200"><h4 class="text-sm font-semibold text-slate-600">Notes:</h4><p class="text-sm text-slate-600 whitespace-pre-wrap">${vendor.notes}</p></div>` : ''}</div><div class="mt-4 pt-4 border-t flex justify-end items-center"><div class="flex items-center ml-4 flex-shrink-0"><button data-id="${vendor.id}" class="edit-btn text-sm font-medium text-blue-600 hover:text-blue-800">Edit</button><button data-id="${vendor.id}" class="remove-btn text-sm font-medium text-red-600 hover:text-red-800 ml-4">Remove</button></div></div></div>`; vendorListContainer.innerHTML += card; }); } updateDashboardStats(vendorList); };
 
         const renderUsers = (userList) => { userListEl.innerHTML = ''; userList.forEach(user => { if (user.role === 'admin') return; const userDiv = document.createElement('div'); userDiv.className = 'flex justify-between items-center p-2 border rounded'; userDiv.innerHTML = `<span class="text-sm">${user.email}</span><button data-id="${user.id}" data-email="${user.email}" class="remove-user-btn text-xs text-red-600 hover:text-red-800">Remove</button>`; userListEl.appendChild(userDiv); }); };
         
@@ -241,18 +210,18 @@
 
         addUserForm.addEventListener('submit', async (e) => { e.preventDefault(); const email = document.getElementById('newUserEmail').value; const password = document.getElementById('newUserPassword').value; const addUserBtn = document.getElementById('add-user-btn'); addUserBtn.disabled = true; userError.classList.add('hidden'); try { const userCredential = await createUserWithEmailAndPassword(auth, email, password); await setDoc(doc(db, "users", userCredential.user.uid), { email: email, role: 'user' }); addUserForm.reset(); } catch (error) { userError.textContent = error.message; userError.classList.remove('hidden'); } finally { addUserBtn.disabled = false; } });
         
-        addVendorForm.addEventListener('submit', async (e) => { e.preventDefault(); const submitButton = document.getElementById('submit-vendor-btn'); submitButton.disabled = true; submitButton.textContent = 'Saving...'; const collectedVehicleTypes = [...tempCustomVehicles]; document.querySelectorAll('.vehicle-type-checkbox:checked').forEach(c => { const type = c.dataset.type, countInput = document.querySelector(`input[data-type-count="${type}"]`), count = parseInt(countInput.value) || 0; if (count > 0) collectedVehicleTypes.push({ type, count }); }); const countryCode = document.getElementById('whatsappCountryCode').value, whatsappInput = document.getElementById('whatsappNumber').value.trim(); let fullWhatsappNumber = ''; if (whatsappInput) fullWhatsappNumber = `+${countryCode}${whatsappInput.replace(/\D/g,'')}`; const newVendor = { vendorName: document.getElementById('vendorName').value, registeredCompanyName: document.getElementById('registeredCompanyName').value, cityZone: document.getElementById('cityZone').value, contactNumber: document.getElementById('contactNumber').value, whatsappNumber: fullWhatsappNumber, yearOfEstablishment: document.getElementById('yearOfEstablishment').value, isGstRegistered: document.getElementById('isGstRegistered').checked, hasOwnFleet: document.getElementById('hasOwnFleet').checked, vehicleCount: document.getElementById('vehicleCount').value, vehicleTypes: collectedVehicleTypes, notes: document.getElementById('notes').value }; try { await addDoc(vendorsCollection, newVendor); addVendorForm.reset(); initializeVehicleForm(); closeModal(vendorModal); } catch (error) { console.error("Error adding document: ", error); alert("Could not save vendor."); } finally { submitButton.disabled = false; submitButton.textContent = 'Save Vendor'; } });
+        addVendorForm.addEventListener('submit', async (e) => { e.preventDefault(); const submitButton = document.getElementById('submit-vendor-btn'); submitButton.disabled = true; submitButton.textContent = 'Saving...'; const collectedVehicleTypes = [...tempCustomVehicles]; document.querySelectorAll('.vehicle-type-checkbox:checked').forEach(c => { const type = c.dataset.type, countInput = document.querySelector(`input[data-type-count="${type}"]`), count = parseInt(countInput.value) || 0; if (count > 0) collectedVehicleTypes.push({ type, count }); }); const countryCode = document.getElementById('whatsappCountryCode').value, whatsappInput = document.getElementById('whatsappNumber').value.trim(); let fullWhatsappNumber = ''; if (whatsappInput) fullWhatsappNumber = `+${countryCode}${whatsappInput.replace(/\D/g,'')}`; const vendorData = { vendorName: document.getElementById('vendorName').value, registeredCompanyName: document.getElementById('registeredCompanyName').value, cityZone: document.getElementById('cityZone').value, contactNumber: document.getElementById('contactNumber').value, whatsappNumber: fullWhatsappNumber, yearOfEstablishment: document.getElementById('yearOfEstablishment').value, isGstRegistered: document.getElementById('isGstRegistered').checked, hasOwnFleet: document.getElementById('hasOwnFleet').checked, vehicleCount: document.getElementById('vehicleCount').value, vehicleTypes: collectedVehicleTypes, notes: document.getElementById('notes').value }; try { if (editVendorId) { const vendorDocRef = doc(db, 'vendors', editVendorId); await updateDoc(vendorDocRef, vendorData); } else { await addDoc(vendorsCollection, vendorData); } addVendorForm.reset(); initializeVehicleForm(); closeModal(vendorModal); } catch (error) { console.error("Error saving document: ", error); if(error.code === 'permission-denied'){ alert('CRITICAL ERROR: Permission Denied.\n\nThis almost always means your Firestore Security Rules are incorrect or you have not configured App Check.\n\nPlease check both.'); } else { alert("Could not save vendor."); } } finally { submitButton.disabled = false; submitButton.textContent = 'Save Vendor'; } });
 
         function setupConfirmation(id, type, text) { itemToDelete = {id, type}; confirmTitle.textContent = `Remove ${type}?`; confirmText.textContent = text; openModal(confirmModal); }
-        vendorListContainer.addEventListener('click', (e) => { if (e.target.classList.contains('remove-btn')) { setupConfirmation(e.target.dataset.id, 'vendor', 'Do you really want to remove this vendor?'); }});
+        vendorListContainer.addEventListener('click', (e) => { if (e.target.classList.contains('remove-btn')) { setupConfirmation(e.target.dataset.id, 'vendor', 'Do you really want to remove this vendor?'); } if (e.target.classList.contains('edit-btn')) { const vendorId = e.target.dataset.id; const vendorToEdit = allVendors.find(v => v.id === vendorId); if (vendorToEdit) openEditModal(vendorToEdit); } });
         userListEl.addEventListener('click', (e) => { if (e.target.classList.contains('remove-user-btn')) { setupConfirmation(e.target.dataset.id, 'user', `Remove user ${e.target.dataset.email}?`); }});
         cancelRemoveBtn.addEventListener('click', () => { itemToDelete = {id: null, type: null}; closeModal(confirmModal); });
         confirmRemoveBtn.addEventListener('click', async () => { if (itemToDelete.id && itemToDelete.type) { try { const collectionName = itemToDelete.type === 'vendor' ? 'vendors' : 'users'; await deleteDoc(doc(db, collectionName, itemToDelete.id)); } catch (error) { alert(`Could not remove ${itemToDelete.type}.`); } finally { itemToDelete = {id: null, type: null}; closeModal(confirmModal); } } });
 
-        openModalBtn.addEventListener('click', () => {
-            initializeVehicleForm();
-            openModal(vendorModal);
-        }); 
+        const openAddModal = () => { editVendorId = null; addVendorForm.reset(); vendorModalTitle.textContent = 'Add New Vendor'; submitVendorBtn.textContent = 'Save Vendor'; initializeVehicleForm(); openModal(vendorModal); };
+        const openEditModal = (vendor) => { addVendorForm.reset(); editVendorId = vendor.id; vendorModalTitle.textContent = 'Edit Vendor Details'; submitVendorBtn.textContent = 'Update Vendor'; document.getElementById('vendorName').value = vendor.vendorName || ''; document.getElementById('registeredCompanyName').value = vendor.registeredCompanyName || ''; document.getElementById('cityZone').value = vendor.cityZone || ''; document.getElementById('contactNumber').value = vendor.contactNumber || ''; const wa = vendor.whatsappNumber || ''; const waCodeMatch = wa.match(/^\+(\d+)/); if(waCodeMatch) { document.getElementById('whatsappCountryCode').value = waCodeMatch[1]; document.getElementById('whatsappNumber').value = wa.substring(waCodeMatch[0].length); } else { document.getElementById('whatsappNumber').value = wa; } document.getElementById('yearOfEstablishment').value = vendor.yearOfEstablishment || ''; document.getElementById('isGstRegistered').checked = vendor.isGstRegistered || false; document.getElementById('hasOwnFleet').checked = vendor.hasOwnFleet || false; document.getElementById('vehicleCount').value = vendor.vehicleCount || ''; document.getElementById('notes').value = vendor.notes || ''; initializeVehicleForm(vendor.vehicleTypes); openModal(vendorModal); };
+
+        openModalBtn.addEventListener('click', openAddModal); 
         closeModalBtn.addEventListener('click', () => closeModal(vendorModal));
         manageUsersBtn.addEventListener('click', () => openModal(userModal)); closeUserModalBtn.addEventListener('click', () => closeModal(userModal));
         exportBtn.addEventListener('click', () => { if (allVendors.length === 0) { alert("No vendor data to export."); return; } const dataForExport = allVendors.map(v => ({ 'Vendor Name': v.vendorName, 'Registered Company Name': v.registeredCompanyName, 'City / Zone': v.cityZone, 'Contact Number': v.contactNumber, 'WhatsApp Number': v.whatsappNumber, 'Year of Establishment': v.yearOfEstablishment, 'GST Registered': v.isGstRegistered ? 'Yes' : 'No', 'Owns Fleet': v.hasOwnFleet ? 'Yes' : 'No', 'Total Vehicles': v.vehicleCount, 'Vehicle Types': v.vehicleTypes && v.vehicleTypes.length > 0 ? v.vehicleTypes.map(vt => `${vt.type} (${vt.count})`).join(', ') : 'N/A', 'Notes / Red Flags': v.notes })); const worksheet = XLSX.utils.json_to_sheet(dataForExport); const workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Vendors"); XLSX.writeFile(workbook, "VendorDetails.xlsx"); });
