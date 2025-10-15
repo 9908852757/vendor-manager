@@ -10,106 +10,105 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .toggle-bg { position: relative; display: block; width: 2.75rem; height: 1.5rem; border-radius: 9999px; background-color: #e5e7eb; transition: background-color 0.2s ease-in-out; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; } /* slate-900 */
+        .toggle-bg { position: relative; display: block; width: 2.75rem; height: 1.5rem; border-radius: 9999px; background-color: #475569; transition: background-color 0.2s ease-in-out; } /* slate-600 */
         .toggle-bg:after { content: ''; position: absolute; top: 2px; left: 2px; background-color: white; border-radius: 9999px; height: 1.25rem; width: 1.25rem; transition: transform 0.2s ease-in-out; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-        input:checked + .toggle-bg { background-color: #2563eb; }
+        input:checked + .toggle-bg { background-color: #0ea5e9; } /* sky-500 */
         input:checked + .toggle-bg:after { transform: translateX(100%); }
-        #loading-overlay { background-color: rgba(241, 245, 249, 0.8); }
-        .spinner { border-top-color: #3b82f6; animation: spin 1s linear infinite; }
+        #loading-overlay { background-color: rgba(15, 23, 42, 0.8); }
+        .spinner { border-top-color: #38bdf8; animation: spin 1s linear infinite; } /* sky-400 */
         @keyframes spin { to { transform: rotate(360deg); } }
-        /* Table styles for better readability */
         th { text-align: left; }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-400">
 
-    <div id="login-page" class="min-h-screen flex items-center justify-center bg-slate-100">
-        <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-            <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Vendor Dashboard Login</h1>
+    <div id="login-page" class="min-h-screen flex items-center justify-center bg-slate-900">
+        <div class="bg-slate-800 p-8 rounded-xl shadow-lg w-full max-w-md border border-slate-700">
+            <h1 class="text-2xl font-bold text-center text-slate-200 mb-6">Vendor Dashboard Login</h1>
             <form id="login-form">
                 <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
-                    <input type="email" id="email" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm" required>
+                    <label for="email" class="block text-sm font-medium text-slate-400">Email</label>
+                    <input type="email" id="email" class="mt-1 block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 shadow-sm" required>
                 </div>
                 <div class="mb-6">
-                    <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
-                    <input type="password" id="password" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm" required>
+                    <label for="password" class="block text-sm font-medium text-slate-400">Password</label>
+                    <input type="password" id="password" class="mt-1 block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 shadow-sm" required>
                 </div>
-                <p id="login-error" class="text-sm text-red-600 text-center mb-4 hidden"></p>
-                <button type="submit" class="w-full inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">Login</button>
+                <p id="login-error" class="text-sm text-red-500 text-center mb-4 hidden"></p>
+                <button type="submit" class="w-full inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700">Login</button>
             </form>
         </div>
     </div>
 
     <div id="dashboard-page" class="hidden">
-        <div id="loading-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4"><div class="spinner h-12 w-12 rounded-full border-4 border-slate-200"></div></div>
+        <div id="loading-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4"><div class="spinner h-12 w-12 rounded-full border-4 border-slate-700"></div></div>
         <div class="container mx-auto p-4 sm:p-6 lg:p-8">
             <header class="flex flex-col sm:flex-row justify-between items-start mb-8">
                 <div>
-                    <h1 class="text-3xl font-bold text-slate-800">Vendor Dashboard</h1>
-                    <p id="user-welcome" class="text-slate-500 mt-1"></p>
+                    <h1 class="text-3xl font-bold text-slate-200">Vendor Dashboard</h1>
+                    <p id="user-welcome" class="text-slate-400 mt-1"></p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
-                    <button id="manage-users-btn" class="hidden inline-flex justify-center py-2 px-6 border border-slate-300 shadow-sm text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50">Manage Users</button>
-                    <button id="export-btn" class="inline-flex justify-center py-2 px-6 border border-slate-300 shadow-sm text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50">Export Selected</button>
-                    <button id="open-modal-btn" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">Add New Vendor</button>
+                    <button id="manage-users-btn" class="hidden inline-flex justify-center py-2 px-6 border border-slate-600 shadow-sm text-sm font-medium rounded-md text-slate-200 bg-slate-700 hover:bg-slate-600">Manage Users</button>
+                    <button id="export-btn" class="inline-flex justify-center py-2 px-6 border border-slate-600 shadow-sm text-sm font-medium rounded-md text-slate-200 bg-slate-700 hover:bg-slate-600">Export Selected</button>
+                    <button id="open-modal-btn" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700">Add New Vendor</button>
                     <button id="logout-btn" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">Logout</button>
                 </div>
             </header>
             
             <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
-                <div class="bg-white p-6 rounded-xl shadow"><h3 class="text-sm font-medium text-slate-500">Total Vendors</h3><p id="total-vendors-stat" class="text-3xl font-bold text-slate-800 mt-2">0</p></div>
+                <div class="bg-slate-800 border border-slate-700 p-6 rounded-xl shadow-lg"><h3 class="text-sm font-medium text-slate-400">Total Vendors</h3><p id="total-vendors-stat" class="text-3xl font-bold text-slate-200 mt-2">0</p></div>
                 <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                     <div>
-                        <label for="name-filter" class="block text-sm font-medium text-slate-700">Filter by Name</label>
-                        <input type="text" id="name-filter" placeholder="Search vendor name..." class="mt-1 block w-full sm:w-48 pl-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                        <label for="name-filter" class="block text-sm font-medium text-slate-400">Filter by Name</label>
+                        <input type="text" id="name-filter" placeholder="Search vendor name..." class="mt-1 block w-full sm:w-48 px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 shadow-sm">
                     </div>
                     <div>
-                        <label for="date-filter" class="block text-sm font-medium text-slate-700">Filter by Date Added</label>
-                        <input type="date" id="date-filter" class="mt-1 block w-full pl-3 pr-2 py-2 border border-gray-300 rounded-md shadow-sm">
+                        <label for="date-filter" class="block text-sm font-medium text-slate-400">Filter by Date Added</label>
+                        <input type="date" id="date-filter" class="mt-1 block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 shadow-sm">
                     </div>
                     <div>
-                        <label for="city-filter" class="block text-sm font-medium text-slate-700">Filter by City</label>
-                        <select id="city-filter" class="mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm">
+                        <label for="city-filter" class="block text-sm font-medium text-slate-400">Filter by City</label>
+                        <select id="city-filter" class="mt-1 block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 shadow-sm">
                             <option value="all">All Cities</option>
                         </select>
                     </div>
-                    <button id="clear-filters-btn" class="self-end py-2 px-4 border rounded-md text-sm font-medium bg-white hover:bg-slate-50">Clear</button>
+                    <button id="clear-filters-btn" class="self-end py-2 px-4 border border-slate-600 rounded-md text-sm font-medium bg-slate-700 hover:bg-slate-600 text-slate-200">Clear</button>
                 </div>
             </div>
 
-            <section id="vendor-list-section" class="bg-white rounded-xl shadow overflow-x-auto">
+            <section id="vendor-list-section" class="bg-slate-800 border border-slate-700 rounded-xl shadow-lg overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-slate-50">
+                    <thead class="bg-slate-900">
                         <tr>
                             <th class="p-4 w-12 text-center"><input type="checkbox" id="select-all-checkbox"></th>
-                            <th class="p-4 font-medium text-slate-600">Vendor Name</th>
-                            <th class="p-4 font-medium text-slate-600">City / Zone</th>
-                            <th class="p-4 font-medium text-slate-600">Contact</th>
-                            <th class="p-4 font-medium text-slate-600">Date Added</th>
-                            <th class="p-4 font-medium text-slate-600">Added By</th>
-                            <th class="p-4 font-medium text-slate-600">Actions</th>
+                            <th class="p-4 font-medium text-slate-400">Vendor Name</th>
+                            <th class="p-4 font-medium text-slate-400">City / Zone</th>
+                            <th class="p-4 font-medium text-slate-400">Contact</th>
+                            <th class="p-4 font-medium text-slate-400">Date Added</th>
+                            <th class="p-4 font-medium text-slate-400">Notes</th>
+                            <th class="p-4 font-medium text-slate-400">Added By</th>
+                            <th class="p-4 font-medium text-slate-400">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="vendor-list-body">
-                        </tbody>
+                    <tbody id="vendor-list-body"></tbody>
                 </table>
-                <div id="empty-state" class="text-center py-16 hidden"><h3 class="text-xl font-semibold text-slate-700">Your vendor list is empty.</h3><p class="text-slate-500 mt-2">Click "Add New Vendor" to get started.</p></div>
+                <div id="empty-state" class="text-center py-16 hidden"><h3 class="text-xl font-semibold text-slate-300">Your vendor list is empty.</h3><p class="text-slate-500 mt-2">Click "Add New Vendor" to get started.</p></div>
             </section>
         </div>
     </div>
 
-    <div id="vendor-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50 p-4">
-        <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center p-6 border-b"><h2 id="modal-title" class="text-2xl font-bold text-blue-800">Add New Vendor</h2><button id="close-modal-btn" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
-            <div class="p-6 overflow-y-auto"><form id="add-vendor-form"><div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6"><div class="space-y-6"><div><label for="vendorName" class="block text-sm font-medium">Vendor Name (Brand)</label><input type="text" id="vendorName" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm" required></div><div><label for="registeredCompanyName" class="block text-sm font-medium">Registered Company Name</label><input type="text" id="registeredCompanyName" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm"></div><div><label for="cityZone" class="block text-sm font-medium">City / Zone</label><input type="text" id="cityZone" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm" required></div><div><label for="contactNumber" class="block text-sm font-medium">Contact Number</label><input type="tel" id="contactNumber" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm"></div><div><label for="whatsappNumber" class="block text-sm font-medium">WhatsApp Number</label><div class="flex mt-1"><select id="whatsappCountryCode" class="block w-auto px-3 py-2 border border-r-0 rounded-l-md text-sm shadow-sm"></select><input type="tel" id="whatsappNumberInput" class="block flex-1 px-3 py-2 border rounded-r-md text-sm shadow-sm" placeholder="e.g. 9876543210"></div></div><div class="space-y-4 pt-2"><h3 class="text-md font-semibold border-b pb-2">Company Details</h3><div class="flex items-center justify-between"><label for="yearOfEstablishment" class="text-sm font-medium">Year of Establishment</label><input type="number" id="yearOfEstablishment" placeholder="e.g., 2010" class="w-1/2 mt-1 block px-3 py-2 border rounded-md text-sm shadow-sm"></div><div class="flex items-center justify-between"><span class="text-sm font-medium">GST Registered?</span><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" id="isGstRegistered" class="sr-only"><div class="toggle-bg"></div></div></label></div></div></div><div class="space-y-6"><div class="space-y-4"><h3 class="text-md font-semibold border-b pb-2">Fleet Details</h3><div class="flex items-center justify-between"><span class="text-sm font-medium">Owns Fleet?</span><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" id="hasOwnFleet" class="sr-only"><div class="toggle-bg"></div></div></label></div><div class="flex items-center justify-between"><label for="vehicleCount" class="text-sm font-medium">Total No. of Vehicles</label><input type="number" id="vehicleCount" placeholder="e.g., 25" class="w-1/2 mt-1 block px-3 py-2 border rounded-md text-sm shadow-sm"></div></div><div class="space-y-4"><h3 class="text-md font-semibold border-b pb-2">Vehicle Types & Count</h3><div id="vehicle-types-container" class="space-y-2"></div><div class="flex gap-2 items-center pt-2"><input type="text" id="customVehicleName" placeholder="Custom Type" class="flex-grow block w-full px-3 py-2 border rounded-md text-sm shadow-sm"><input type="number" id="customVehicleCount" placeholder="No." class="w-16 block px-3 py-2 border rounded-md text-sm shadow-sm"><button type="button" id="add-custom-vehicle-btn" class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">+</button></div><div id="custom-vehicle-tags" class="flex flex-wrap gap-2 mt-2"></div></div><div class="pt-4"><label for="notes" class="block text-sm font-medium">Notes / Red Flags</label><textarea id="notes" rows="4" class="mt-1 block w-full px-3 py-2 border rounded-md text-sm shadow-sm"></textarea></div></div></div></form></div>
-            <div class="flex justify-end items-center p-6 border-t"><button type="submit" form="add-vendor-form" id="submit-vendor-btn" class="inline-flex justify-center py-2 px-6 border rounded-md text-white bg-blue-600 hover:bg-blue-700">Save Vendor</button></div>
+    <div id="vendor-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 overflow-y-auto h-full w-full flex items-center justify-center z-50 p-4">
+        <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col border border-slate-700">
+            <div class="flex justify-between items-center p-6 border-b border-slate-700"><h2 id="modal-title" class="text-2xl font-bold text-sky-400">Add New Vendor</h2><button id="close-modal-btn" class="text-slate-500 hover:text-slate-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
+            <div class="p-6 overflow-y-auto"><form id="add-vendor-form"><div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6"><div class="space-y-6"><div><label for="vendorName" class="block text-sm font-medium">Vendor Name (Brand)</label><input type="text" id="vendorName" class="mt-1 block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200" required></div><div><label for="registeredCompanyName" class="block text-sm font-medium">Registered Company Name</label><input type="text" id="registeredCompanyName" class="mt-1 block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200"></div><div><label for="cityZone" class="block text-sm font-medium">City / Zone</label><input type="text" id="cityZone" class="mt-1 block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200" required></div><div><label for="contactNumber" class="block text-sm font-medium">Contact Number</label><input type="tel" id="contactNumber" class="mt-1 block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200"></div><div><label for="whatsappNumber" class="block text-sm font-medium">WhatsApp Number</label><div class="flex mt-1"><select id="whatsappCountryCode" class="block w-auto px-3 py-2 bg-slate-700 border border-slate-600 border-r-0 rounded-l-md text-slate-200"></select><input type="tel" id="whatsappNumberInput" class="block flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-r-md text-slate-200" placeholder="e.g. 9876543210"></div></div><div class="space-y-4 pt-2"><h3 class="text-md font-semibold border-b border-slate-700 pb-2 text-slate-200">Company Details</h3><div class="flex items-center justify-between"><label for="yearOfEstablishment" class="text-sm font-medium">Year of Establishment</label><input type="number" id="yearOfEstablishment" placeholder="e.g., 2010" class="w-1/2 mt-1 block px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200"></div><div class="flex items-center justify-between"><span class="text-sm font-medium">GST Registered?</span><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" id="isGstRegistered" class="sr-only"><div class="toggle-bg"></div></div></label></div></div></div><div class="space-y-6"><div class="space-y-4"><h3 class="text-md font-semibold border-b border-slate-700 pb-2 text-slate-200">Fleet Details</h3><div class="flex items-center justify-between"><span class="text-sm font-medium">Owns Fleet?</span><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" id="hasOwnFleet" class="sr-only"><div class="toggle-bg"></div></div></label></div><div class="flex items-center justify-between"><label for="vehicleCount" class="text-sm font-medium">Total No. of Vehicles</label><input type="number" id="vehicleCount" placeholder="e.g., 25" class="w-1/2 mt-1 block px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200"></div></div><div class="space-y-4"><h3 class="text-md font-semibold border-b border-slate-700 pb-2 text-slate-200">Vehicle Types & Count</h3><div id="vehicle-types-container" class="space-y-2"></div><div class="flex gap-2 items-center pt-2"><input type="text" id="customVehicleName" placeholder="Custom Type" class="flex-grow block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200"><input type="number" id="customVehicleCount" placeholder="No." class="w-16 block px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200"><button type="button" id="add-custom-vehicle-btn" class="px-3 py-2 text-sm font-medium text-white bg-sky-600 rounded-md hover:bg-sky-700">+</button></div><div id="custom-vehicle-tags" class="flex flex-wrap gap-2 mt-2"></div></div><div class="pt-4"><label for="notes" class="block text-sm font-medium">Notes / Red Flags</label><textarea id="notes" rows="4" class="mt-1 block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200"></textarea></div></div></div></form></div>
+            <div class="flex justify-end items-center p-6 border-t border-slate-700"><button type="submit" form="add-vendor-form" id="submit-vendor-btn" class="inline-flex justify-center py-2 px-6 border rounded-md text-white bg-sky-600 hover:bg-sky-700">Save Vendor</button></div>
         </div>
     </div>
 
-    <div id="user-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"><div class="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col"><div class="flex justify-between items-center p-6 border-b"><h2 class="text-2xl font-bold text-blue-800">Manage Users</h2><button id="close-user-modal-btn" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><div class="p-6 overflow-y-auto"><div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-r-lg"><p class="text-sm text-blue-700">Note: Removing a user here revokes their access. For full account deletion, use the Firebase Authentication console.</p></div><h3 class="text-lg font-semibold mb-4">Add New User</h3><form id="add-user-form" class="flex gap-4 items-start"><div class="flex-grow space-y-4"><input type="email" id="newUserEmail" placeholder="User Email" class="block w-full px-3 py-2 border rounded-md text-sm" required><input type="password" id="newUserPassword" placeholder="Password" class="block w-full px-3 py-2 border rounded-md text-sm" required></div><button type="submit" id="add-user-btn" class="py-2 px-6 border rounded-md text-white bg-blue-600 hover:bg-blue-700">Add User</button></form><p id="user-error" class="text-sm text-red-600 mt-2 hidden"></p><h3 class="text-lg font-semibold mt-8 mb-4">Existing Users</h3><div id="user-list" class="space-y-2"></div></div></div></div>
-    <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center"><h3 id="confirm-title" class="text-lg font-semibold">Are you sure?</h3><p id="confirm-text" class="text-sm text-slate-500 mt-2">This action cannot be undone.</p><div class="mt-6 flex justify-center gap-4"><button id="cancel-remove-btn" class="py-2 px-6 border rounded-md bg-white hover:bg-slate-50">Cancel</button><button id="confirm-remove-btn" class="py-2 px-6 border rounded-md text-white bg-red-600 hover:bg-red-700">Remove</button></div></div></div>
+    <div id="user-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4"><div class="relative bg-slate-800 border border-slate-700 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col"><div class="flex justify-between items-center p-6 border-b border-slate-700"><h2 class="text-2xl font-bold text-sky-400">Manage Users</h2><button id="close-user-modal-btn" class="text-slate-500 hover:text-slate-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><div class="p-6 overflow-y-auto"><div class="bg-sky-900/50 border-l-4 border-sky-500 p-4 mb-6 rounded-r-lg"><p class="text-sm text-sky-300">Note: Removing a user here revokes their access. For full account deletion, use the Firebase Authentication console.</p></div><h3 class="text-lg font-semibold mb-4 text-slate-200">Add New User</h3><form id="add-user-form" class="flex gap-4 items-start"><div class="flex-grow space-y-4"><input type="email" id="newUserEmail" placeholder="User Email" class="block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200" required><input type="password" id="newUserPassword" placeholder="Password" class="block w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200" required></div><button type="submit" id="add-user-btn" class="py-2 px-6 border rounded-md text-white bg-sky-600 hover:bg-sky-700">Add User</button></form><p id="user-error" class="text-sm text-red-500 mt-2 hidden"></p><h3 class="text-lg font-semibold mt-8 mb-4 text-slate-200">Existing Users</h3><div id="user-list" class="space-y-2"></div></div></div></div>
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4"><div class="bg-slate-800 border border-slate-700 rounded-lg shadow-xl p-6 w-full max-w-sm text-center"><h3 id="confirm-title" class="text-lg font-semibold text-slate-200">Are you sure?</h3><p id="confirm-text" class="text-sm text-slate-400 mt-2">This action cannot be undone.</p><div class="mt-6 flex justify-center gap-4"><button id="cancel-remove-btn" class="py-2 px-6 border border-slate-600 rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200">Cancel</button><button id="confirm-remove-btn" class="py-2 px-6 border rounded-md text-white bg-red-600 hover:bg-red-700">Remove</button></div></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
@@ -132,7 +131,6 @@
         const whatsappNumberInput = document.getElementById('whatsappNumberInput');
         const modalTitleEl = document.getElementById('modal-title');
         const submitVendorBtn = document.getElementById('submit-vendor-btn');
-        // New Filter Elements
         const dateFilter = document.getElementById('date-filter'), nameFilter = document.getElementById('name-filter'), clearFiltersBtn = document.getElementById('clear-filters-btn');
 
         const firebaseConfig = {
@@ -149,8 +147,7 @@
         db = getFirestore(app);
 
         onAuthStateChanged(auth, async (user) => {
-            unsubscribeVendors();
-            unsubscribeUsers();
+            unsubscribeVendors(); unsubscribeUsers();
             if (user) {
                 loadingOverlay.classList.remove('hidden');
                 try {
@@ -167,7 +164,7 @@
                     if (userRole === 'admin') { usersCollection = collection(db, "users"); listenForUsers(); }
                 } catch (error) {
                     console.error("Firebase post-auth error:", error);
-                    loadingOverlay.innerHTML = `<div class="text-center p-4 bg-red-100 text-red-700 rounded-lg max-w-lg mx-auto"><p class="font-bold">Access Denied</p><p class="text-sm mt-2">Could not verify user role. This is often caused by Firestore Security Rules. Please check the console for details.</p></div>`;
+                    loadingOverlay.innerHTML = `<div class="text-center p-4 bg-red-900/50 text-red-300 rounded-lg max-w-lg mx-auto"><p class="font-bold">Access Denied</p><p class="text-sm mt-2">Could not verify user role. This is often caused by Firestore Security Rules. Please check the console for details.</p></div>`;
                 }
             } else {
                 loginPage.classList.remove('hidden'); dashboardPage.classList.add('hidden'); loadingOverlay.classList.add('hidden');
@@ -190,42 +187,18 @@
         }
 
         function applyAllFilters() {
-            const selectedCity = cityFilter.value;
-            const selectedDate = dateFilter.value;
-            const searchTerm = nameFilter.value.toLowerCase();
-            
+            const selectedCity = cityFilter.value, selectedDate = dateFilter.value, searchTerm = nameFilter.value.toLowerCase();
             let filteredVendors = allVendors;
-
-            if (selectedCity !== 'all') {
-                filteredVendors = filteredVendors.filter(v => v.cityZone === selectedCity);
-            }
-            if (selectedDate) {
-                filteredVendors = filteredVendors.filter(v => {
-                    if (!v.dateAdded?.toDate) return false;
-                    const vendorDate = v.dateAdded.toDate().toISOString().split('T')[0]; // Format as YYYY-MM-DD
-                    return vendorDate === selectedDate;
-                });
-            }
-            if (searchTerm) {
-                filteredVendors = filteredVendors.filter(v => v.vendorName && v.vendorName.toLowerCase().includes(searchTerm));
-            }
-
+            if (selectedCity !== 'all') { filteredVendors = filteredVendors.filter(v => v.cityZone === selectedCity); }
+            if (selectedDate) { filteredVendors = filteredVendors.filter(v => v.dateAdded?.toDate ? v.dateAdded.toDate().toISOString().split('T')[0] === selectedDate : false); }
+            if (searchTerm) { filteredVendors = filteredVendors.filter(v => v.vendorName && v.vendorName.toLowerCase().includes(searchTerm)); }
             renderVendors(filteredVendors);
         }
         
-        // Event Listeners for Filters
-        cityFilter.addEventListener('change', applyAllFilters);
-        dateFilter.addEventListener('change', applyAllFilters);
-        nameFilter.addEventListener('input', applyAllFilters);
-        clearFiltersBtn.addEventListener('click', () => {
-            cityFilter.value = 'all';
-            dateFilter.value = '';
-            nameFilter.value = '';
-            applyAllFilters();
-        });
+        cityFilter.addEventListener('change', applyAllFilters); dateFilter.addEventListener('change', applyAllFilters); nameFilter.addEventListener('input', applyAllFilters);
+        clearFiltersBtn.addEventListener('click', () => { cityFilter.value = 'all'; dateFilter.value = ''; nameFilter.value = ''; applyAllFilters(); });
 
-
-        const initializeVehicleForm = () => { vehicleTypesContainer.innerHTML = ''; standardVehicleTypes.forEach(type => { const div = document.createElement('div'); div.className = 'flex items-center justify-between gap-2'; div.innerHTML = `<label class="text-sm text-slate-600">${type}</label><div class="flex items-center gap-2"><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" data-type="${type}" class="sr-only vehicle-type-checkbox"><div class="toggle-bg"></div></div></label><input type="number" data-type-count="${type}" placeholder="No." class="w-20 mt-1 block px-3 py-1 bg-white border border-slate-300 rounded-md text-sm shadow-sm" disabled></div>`; vehicleTypesContainer.appendChild(div); }); tempCustomVehicles = []; customVehicleTagsContainer.innerHTML = ''; };
+        const initializeVehicleForm = () => { vehicleTypesContainer.innerHTML = ''; standardVehicleTypes.forEach(type => { const div = document.createElement('div'); div.className = 'flex items-center justify-between gap-2'; div.innerHTML = `<label class="text-sm font-medium text-slate-400">${type}</label><div class="flex items-center gap-2"><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" data-type="${type}" class="sr-only vehicle-type-checkbox"><div class="toggle-bg"></div></div></label><input type="number" data-type-count="${type}" placeholder="No." class="w-20 mt-1 block px-3 py-1 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm" disabled></div>`; vehicleTypesContainer.appendChild(div); }); tempCustomVehicles = []; customVehicleTagsContainer.innerHTML = ''; };
         const updateDashboardStats = (vendorList) => { totalVendorsStat.textContent = vendorList.length; };
         
         const renderVendors = (vendorList) => {
@@ -235,18 +208,21 @@
             } else {
                 emptyState.classList.add('hidden'); vendorListBody.classList.remove('hidden');
                 vendorList.forEach((vendor) => {
-                    const contactHTML = `${vendor.contactNumber ? `<a href="tel:${vendor.contactNumber}" class="text-blue-600 hover:underline">${vendor.contactNumber}</a>` : ''}${vendor.contactNumber && vendor.whatsappNumber ? `<br>` : ''}${vendor.whatsappNumber ? `<a href="https://wa.me/${vendor.whatsappNumber.replace(/[^0-9]/g, '')}" target="_blank" class="text-green-600 hover:underline">${vendor.whatsappNumber} (WA)</a>` : ''}${!vendor.contactNumber && !vendor.whatsappNumber ? `<span class="text-slate-500">Not provided</span>` : ''}`;
+                    const contactHTML = `${vendor.contactNumber ? `<a href="tel:${vendor.contactNumber}" class="text-sky-400 hover:underline">${vendor.contactNumber}</a>` : ''}${vendor.contactNumber && vendor.whatsappNumber ? `<br>` : ''}${vendor.whatsappNumber ? `<a href="https://wa.me/${vendor.whatsappNumber.replace(/[^0-9]/g, '')}" target="_blank" class="text-emerald-400 hover:underline">${vendor.whatsappNumber} (WA)</a>` : ''}${!vendor.contactNumber && !vendor.whatsappNumber ? `<span class="text-slate-500">Not provided</span>` : ''}`;
                     const dateAdded = vendor.dateAdded?.toDate ? vendor.dateAdded.toDate().toLocaleDateString() : 'N/A';
                     const row = document.createElement('tr');
-                    row.className = 'border-b border-slate-200 hover:bg-slate-50';
+                    row.className = 'border-b border-slate-700 hover:bg-slate-700/50';
                     row.innerHTML = `
                         <td class="p-4 text-center"><input type="checkbox" class="vendor-checkbox" data-id="${vendor.id}"></td>
-                        <td class="p-4 font-medium"><a href="#" class="text-blue-600 hover:underline edit-vendor-btn" data-id="${vendor.id}">${vendor.vendorName || 'N/A'}</a></td>
-                        <td class="p-4 text-slate-600">${vendor.cityZone || 'N/A'}</td>
-                        <td class="p-4 text-slate-600">${contactHTML}</td>
-                        <td class="p-4 text-slate-600">${dateAdded}</td>
-                        <td class="p-4 text-slate-600 truncate max-w-xs" title="${vendor.addedBy || ''}">${vendor.addedBy || 'N/A'}</td>
-                        <td class="p-4"><button data-id="${vendor.id}" class="remove-btn text-sm font-medium text-red-600 hover:text-red-800">Remove</button></td>
+                        <td class="p-4 font-medium"><a href="#" class="text-sky-400 hover:underline edit-vendor-btn" data-id="${vendor.id}">${vendor.registeredCompanyName || 'N/A'}</a></td>
+                        <td class="p-4 text-slate-400">${vendor.cityZone || 'N/A'}</td>
+                        <td class="p-4 text-slate-400">${contactHTML}</td>
+                        <td class="p-4 text-slate-400">${dateAdded}</td>
+                        <td class="p-4 text-slate-400 truncate max-w-xs" title="${vendor.notes || ''}">${vendor.notes || ''}</td>
+                        <td class="p-4 text-slate-400 truncate max-w-xs" title="${vendor.addedBy || ''}">${vendor.addedBy || 'N/A'}</td>
+                        <td class="p-4 whitespace-nowrap">
+                            <button data-id="${vendor.id}" class="remove-btn text-sm font-medium text-red-500 hover:text-red-400">Remove</button>
+                        </td>
                     `;
                     vendorListBody.appendChild(row);
                 });
@@ -254,47 +230,36 @@
             updateDashboardStats(allVendors);
         };
 
-        const renderUsers = (userList) => { userListEl.innerHTML = ''; userList.forEach(user => { if (user.role === 'admin') return; const userDiv = document.createElement('div'); userDiv.className = 'flex justify-between items-center p-2 border rounded'; userDiv.innerHTML = `<span class="text-sm">${user.email}</span><button data-id="${user.id}" data-email="${user.email}" class="remove-user-btn text-xs text-red-600 hover:text-red-800">Remove</button>`; userListEl.appendChild(userDiv); }); };
+        const renderUsers = (userList) => { userListEl.innerHTML = ''; userList.forEach(user => { if (user.role === 'admin') return; const userDiv = document.createElement('div'); userDiv.className = 'flex justify-between items-center p-2 border border-slate-700 rounded'; userDiv.innerHTML = `<span class="text-sm text-slate-300">${user.email}</span><button data-id="${user.id}" data-email="${user.email}" class="remove-user-btn text-xs text-red-500 hover:text-red-400">Remove</button>`; userListEl.appendChild(userDiv); }); };
         const openModal = (modal) => modal.classList.remove('hidden'); const closeModal = (modal) => modal.classList.add('hidden');
-
         addUserForm.addEventListener('submit', async (e) => { e.preventDefault(); const email = document.getElementById('newUserEmail').value; const password = document.getElementById('newUserPassword').value; const addUserBtn = document.getElementById('add-user-btn'); addUserBtn.disabled = true; userError.classList.add('hidden'); try { const userCredential = await createUserWithEmailAndPassword(auth, email, password); await setDoc(doc(db, "users", userCredential.user.uid), { email: email, role: 'user' }); addUserForm.reset(); } catch (error) { userError.textContent = error.message; userError.classList.remove('hidden'); } finally { addUserBtn.disabled = false; } });
-        
         addVendorForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             submitVendorBtn.disabled = true; submitVendorBtn.textContent = 'Saving...';
-            
-            const collectedVehicleTypes = [...tempCustomVehicles];
-            document.querySelectorAll('.vehicle-type-checkbox:checked').forEach(c => {
-                const type = c.dataset.type, countInput = document.querySelector(`input[data-type-count="${type}"]`), count = parseInt(countInput.value) || 0;
-                if (count > 0) collectedVehicleTypes.push({ type, count });
-            });
+            const collectedVehicleTypes = [...tempCustomVehicles]; document.querySelectorAll('.vehicle-type-checkbox:checked').forEach(c => { const type = c.dataset.type, countInput = document.querySelector(`input[data-type-count="${type}"]`), count = parseInt(countInput.value) || 0; if (count > 0) collectedVehicleTypes.push({ type, count }); });
             const countryCode = countryCodeSelect.value, whatsappInput = whatsappNumberInput.value.trim();
             let fullWhatsappNumber = ''; if (whatsappInput) fullWhatsappNumber = `+${countryCode}${whatsappInput.replace(/\D/g,'')}`;
-            
-            const vendorData = {
-                vendorName: document.getElementById('vendorName').value, registeredCompanyName: document.getElementById('registeredCompanyName').value, cityZone: document.getElementById('cityZone').value,
-                contactNumber: document.getElementById('contactNumber').value, whatsappNumber: fullWhatsappNumber, yearOfEstablishment: document.getElementById('yearOfEstablishment').value,
-                isGstRegistered: document.getElementById('isGstRegistered').checked, hasOwnFleet: document.getElementById('hasOwnFleet').checked, vehicleCount: document.getElementById('vehicleCount').value,
-                vehicleTypes: collectedVehicleTypes, notes: document.getElementById('notes').value
-            };
-
+            const vendorData = { vendorName: document.getElementById('vendorName').value, registeredCompanyName: document.getElementById('registeredCompanyName').value, cityZone: document.getElementById('cityZone').value, contactNumber: document.getElementById('contactNumber').value, whatsappNumber: fullWhatsappNumber, yearOfEstablishment: document.getElementById('yearOfEstablishment').value, isGstRegistered: document.getElementById('isGstRegistered').checked, hasOwnFleet: document.getElementById('hasOwnFleet').checked, vehicleCount: document.getElementById('vehicleCount').value, vehicleTypes: collectedVehicleTypes, notes: document.getElementById('notes').value };
             const editingId = addVendorForm.dataset.editingId;
             try {
-                if (editingId) { // Update existing vendor
-                    vendorData.lastModified = serverTimestamp(); vendorData.lastModifiedBy = auth.currentUser.email;
-                    const vendorRef = doc(db, "vendors", editingId); await updateDoc(vendorRef, vendorData);
-                } else { // Add new vendor
-                    vendorData.addedBy = auth.currentUser.email; vendorData.dateAdded = serverTimestamp();
-                    await addDoc(vendorsCollection, vendorData);
+                if (editingId) { 
+                    vendorData.lastModified = serverTimestamp(); 
+                    vendorData.lastModifiedBy = auth.currentUser.email;
+                    // *** ADDED ***
+                    vendorData.lastModifiedByUid = auth.currentUser.uid;
+                    const vendorRef = doc(db, "vendors", editingId); 
+                    await updateDoc(vendorRef, vendorData); 
+                } else { 
+                    vendorData.addedBy = auth.currentUser.email; 
+                    // *** ADDED ***
+                    vendorData.addedByUid = auth.currentUser.uid;
+                    vendorData.dateAdded = serverTimestamp(); 
+                    await addDoc(vendorsCollection, vendorData); 
                 }
                 closeModal(vendorModal);
-            } catch (error) {
-                console.error("Error saving document: ", error); alert("Could not save vendor.");
-            } finally {
-                submitVendorBtn.disabled = false;
-            }
+            } catch (error) { console.error("Error saving document: ", error); alert("Could not save vendor."); } finally { submitVendorBtn.disabled = false; }
         });
-
+        
         function setupConfirmation(id, type, text) { itemToDelete = {id, type}; confirmTitle.textContent = `Remove ${type}?`; confirmText.textContent = text; openModal(confirmModal); }
         vendorListBody.addEventListener('click', (e) => {
             if (e.target.classList.contains('remove-btn')) { setupConfirmation(e.target.dataset.id, 'vendor', 'Do you really want to remove this vendor?'); }
@@ -303,88 +268,39 @@
         userListEl.addEventListener('click', (e) => { if (e.target.classList.contains('remove-user-btn')) { setupConfirmation(e.target.dataset.id, 'user', `Remove user ${e.target.dataset.email}?`); }});
         cancelRemoveBtn.addEventListener('click', () => { itemToDelete = {id: null, type: null}; closeModal(confirmModal); });
         confirmRemoveBtn.addEventListener('click', async () => { if (itemToDelete.id && itemToDelete.type) { try { const collectionName = itemToDelete.type === 'vendor' ? 'vendors' : 'users'; await deleteDoc(doc(db, collectionName, itemToDelete.id)); } catch (error) { alert(`Could not remove ${itemToDelete.type}.`); } finally { itemToDelete = {id: null, type: null}; closeModal(confirmModal); } } });
-
         const resetVendorModal = () => { addVendorForm.reset(); initializeVehicleForm(); delete addVendorForm.dataset.editingId; modalTitleEl.textContent = 'Add New Vendor'; submitVendorBtn.textContent = 'Save Vendor'; countryCodeSelect.value = '91'; }
-        
         openModalBtn.addEventListener('click', () => { resetVendorModal(); openModal(vendorModal); }); 
         closeModalBtn.addEventListener('click', () => closeModal(vendorModal));
         vendorModal.addEventListener('transitionend', () => { if (vendorModal.classList.contains('hidden')) resetVendorModal(); });
-        
         manageUsersBtn.addEventListener('click', () => openModal(userModal)); closeUserModalBtn.addEventListener('click', () => closeModal(userModal));
-        
         function openEditModal(vendorId) {
             resetVendorModal();
             const vendorToEdit = allVendors.find(v => v.id === vendorId);
             if (!vendorToEdit) { console.error("Vendor not found for editing"); return; }
-            
             addVendorForm.dataset.editingId = vendorId;
-            modalTitleEl.textContent = 'Edit Vendor Details';
-            submitVendorBtn.textContent = 'Update Vendor';
-            
-            document.getElementById('vendorName').value = vendorToEdit.vendorName || '';
-            document.getElementById('registeredCompanyName').value = vendorToEdit.registeredCompanyName || '';
-            document.getElementById('cityZone').value = vendorToEdit.cityZone || '';
-            document.getElementById('contactNumber').value = vendorToEdit.contactNumber || '';
-            document.getElementById('yearOfEstablishment').value = vendorToEdit.yearOfEstablishment || '';
-            document.getElementById('isGstRegistered').checked = vendorToEdit.isGstRegistered || false;
-            document.getElementById('hasOwnFleet').checked = vendorToEdit.hasOwnFleet || false;
-            document.getElementById('vehicleCount').value = vendorToEdit.vehicleCount || '';
-            document.getElementById('notes').value = vendorToEdit.notes || '';
-
+            modalTitleEl.textContent = 'Edit Vendor Details'; submitVendorBtn.textContent = 'Update Vendor';
+            document.getElementById('vendorName').value = vendorToEdit.vendorName || ''; document.getElementById('registeredCompanyName').value = vendorToEdit.registeredCompanyName || ''; document.getElementById('cityZone').value = vendorToEdit.cityZone || ''; document.getElementById('contactNumber').value = vendorToEdit.contactNumber || ''; document.getElementById('yearOfEstablishment').value = vendorToEdit.yearOfEstablishment || ''; document.getElementById('isGstRegistered').checked = vendorToEdit.isGstRegistered || false; document.getElementById('hasOwnFleet').checked = vendorToEdit.hasOwnFleet || false; document.getElementById('vehicleCount').value = vendorToEdit.vehicleCount || ''; document.getElementById('notes').value = vendorToEdit.notes || '';
             if (vendorToEdit.whatsappNumber) {
-                const sortedCodes = countryCodes.sort((a,b) => b.code.length - a.code.length);
-                let foundCode = false;
-                for (const country of sortedCodes) {
-                    if (vendorToEdit.whatsappNumber.startsWith(`+${country.code}`)) {
-                        countryCodeSelect.value = country.code;
-                        whatsappNumberInput.value = vendorToEdit.whatsappNumber.substring(country.code.length + 1);
-                        foundCode = true;
-                        break;
-                    }
-                }
+                const sortedCodes = countryCodes.sort((a,b) => b.code.length - a.code.length); let foundCode = false;
+                for (const country of sortedCodes) { if (vendorToEdit.whatsappNumber.startsWith(`+${country.code}`)) { countryCodeSelect.value = country.code; whatsappNumberInput.value = vendorToEdit.whatsappNumber.substring(country.code.length + 1); foundCode = true; break; } }
                 if (!foundCode) whatsappNumberInput.value = vendorToEdit.whatsappNumber;
             }
-
-            if (vendorToEdit.vehicleTypes && vendorToEdit.vehicleTypes.length > 0) {
-                vendorToEdit.vehicleTypes.forEach(vehicle => {
-                    const standardCheckbox = document.querySelector(`.vehicle-type-checkbox[data-type="${vehicle.type}"]`);
-                    if (standardCheckbox) {
-                        standardCheckbox.checked = true;
-                        const countInput = document.querySelector(`input[data-type-count="${vehicle.type}"]`);
-                        countInput.disabled = false;
-                        countInput.value = vehicle.count;
-                    } else {
-                        tempCustomVehicles.push({ type: vehicle.type, count: vehicle.count });
-                    }
-                });
-                renderCustomVehicleTags();
-            }
+            if (vendorToEdit.vehicleTypes && vendorToEdit.vehicleTypes.length > 0) { vendorToEdit.vehicleTypes.forEach(vehicle => { const standardCheckbox = document.querySelector(`.vehicle-type-checkbox[data-type="${vehicle.type}"]`); if (standardCheckbox) { standardCheckbox.checked = true; const countInput = document.querySelector(`input[data-type-count="${vehicle.type}"]`); countInput.disabled = false; countInput.value = vehicle.count; } else { tempCustomVehicles.push({ type: vehicle.type, count: vehicle.count }); } }); renderCustomVehicleTags(); }
             openModal(vendorModal);
         }
-
         exportBtn.addEventListener('click', () => {
             const selectedIds = Array.from(document.querySelectorAll('.vendor-checkbox:checked')).map(cb => cb.dataset.id);
             if (selectedIds.length === 0) { alert("Please select at least one vendor to export."); return; }
             const vendorsToExport = allVendors.filter(vendor => selectedIds.includes(vendor.id));
-            const dataForExport = vendorsToExport.map(v => ({
-                'Vendor Name': v.vendorName, 'Registered Company Name': v.registeredCompanyName, 'City / Zone': v.cityZone, 'Contact Number': v.contactNumber, 'WhatsApp Number': v.whatsappNumber,
-                'Date Added': v.dateAdded?.toDate ? v.dateAdded.toDate().toLocaleDateString() : 'N/A', 
-                'Added By': v.addedBy,
-                'Last Modified': v.lastModified?.toDate ? v.lastModified.toDate().toLocaleDateString() : 'N/A', 
-                'Modified By': v.lastModifiedBy,
-                'Year of Establishment': v.yearOfEstablishment, 'GST Registered': v.isGstRegistered ? 'Yes' : 'No', 'Owns Fleet': v.hasOwnFleet ? 'Yes' : 'No', 'Total Vehicles': v.vehicleCount,
-                'Vehicle Types': v.vehicleTypes && v.vehicleTypes.length > 0 ? v.vehicleTypes.map(vt => `${vt.type} (${vt.count})`).join(', ') : 'N/A', 'Notes / Red Flags': v.notes
-            }));
+            const dataForExport = vendorsToExport.map(v => ({ 'Vendor Name': v.vendorName, 'Registered Company Name': v.registeredCompanyName, 'City / Zone': v.cityZone, 'Contact Number': v.contactNumber, 'WhatsApp Number': v.whatsappNumber, 'Date Added': v.dateAdded?.toDate ? v.dateAdded.toDate().toLocaleDateString() : 'N/A', 'Added By': v.addedBy, 'Last Modified': v.lastModified?.toDate ? v.lastModified.toDate().toLocaleDateString() : 'N/A', 'Modified By': v.lastModifiedBy, 'Year of Establishment': v.yearOfEstablishment, 'GST Registered': v.isGstRegistered ? 'Yes' : 'No', 'Owns Fleet': v.hasOwnFleet ? 'Yes' : 'No', 'Total Vehicles': v.vehicleCount, 'Vehicle Types': v.vehicleTypes && v.vehicleTypes.length > 0 ? v.vehicleTypes.map(vt => `${vt.type} (${vt.count})`).join(', ') : 'N/A', 'Notes / Red Flags': v.notes }));
             const worksheet = XLSX.utils.json_to_sheet(dataForExport); const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Vendors"); XLSX.writeFile(workbook, "SelectedVendorDetails.xlsx");
         });
-
         selectAllCheckbox.addEventListener('change', (e) => { document.querySelectorAll('.vendor-checkbox').forEach(checkbox => { checkbox.checked = e.target.checked; }); });
         vehicleTypesContainer.addEventListener('change', (e) => { if (e.target.classList.contains('vehicle-type-checkbox')) { const type = e.target.dataset.type, countInput = document.querySelector(`input[data-type-count="${type}"]`); countInput.disabled = !e.target.checked; if (!e.target.checked) countInput.value = ''; } });
         addCustomVehicleBtn.addEventListener('click', () => { const nameInput = document.getElementById('customVehicleName'), countInput = document.getElementById('customVehicleCount'), name = nameInput.value.trim(), count = parseInt(countInput.value); if (name && count > 0) { tempCustomVehicles.push({ type: name, count: count }); renderCustomVehicleTags(); nameInput.value = ''; countInput.value = ''; } });
-        const renderCustomVehicleTags = () => { customVehicleTagsContainer.innerHTML = ''; tempCustomVehicles.forEach((vehicle, index) => { const tag = document.createElement('div'); tag.className = 'bg-blue-100 text-blue-800 text-xs font-medium pl-2 pr-1 py-1 rounded-full flex items-center gap-1'; tag.innerHTML = `<span>${vehicle.type} (${vehicle.count})</span><button type="button" data-index="${index}" class="remove-custom-vehicle-btn font-bold">&times;</button>`; customVehicleTagsContainer.appendChild(tag); }); };
+        const renderCustomVehicleTags = () => { customVehicleTagsContainer.innerHTML = ''; tempCustomVehicles.forEach((vehicle, index) => { const tag = document.createElement('div'); tag.className = 'bg-sky-900 text-sky-300 text-xs font-medium pl-2 pr-1 py-1 rounded-full flex items-center gap-1'; tag.innerHTML = `<span>${vehicle.type} (${vehicle.count})</span><button type="button" data-index="${index}" class="remove-custom-vehicle-btn font-bold">&times;</button>`; customVehicleTagsContainer.appendChild(tag); }); };
         customVehicleTagsContainer.addEventListener('click', (e) => { if (e.target.classList.contains('remove-custom-vehicle-btn')) { const indexToRemove = parseInt(e.target.dataset.index); tempCustomVehicles.splice(indexToRemove, 1); renderCustomVehicleTags(); } });
-        
         populateCountryCodes(); // App Initialization
     </script>
 </body>
