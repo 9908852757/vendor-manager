@@ -71,7 +71,6 @@
         .spinner { border-top-color: #22C55E; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Style for vendors pending removal */
         .vendor-pending-removal {
             opacity: 0.6;
             background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(234, 179, 8, 0.05) 10px, rgba(234, 179, 8, 0.05) 20px);
@@ -210,7 +209,6 @@
         auth = getAuth(app);
         db = getFirestore(app);
 
-        // MODIFIED: This function now also handles existing users who might be missing a displayName
         onAuthStateChanged(auth, async (user) => {
             unsubscribeVendors(); 
             unsubscribeUsers();
@@ -222,20 +220,17 @@
                     let userProfileData;
 
                     if (!userDoc.exists()) {
-                        // User exists in Auth, but not Firestore. Create their profile.
                         const defaultDisplayName = user.email.split('@')[0];
                         userProfileData = {
                             email: user.email,
-                            role: 'staff', // Default to staff for safety
+                            role: 'staff',
                             displayName: defaultDisplayName
                         };
                         await setDoc(userDocRef, userProfileData);
                     } else {
                         userProfileData = userDoc.data();
-                        // User exists in Firestore, but might be an old user without a displayName.
                         if (!userProfileData.displayName) {
                             userProfileData.displayName = user.email.split('@')[0];
-                            // Update the document in Firestore to include the new displayName
                             await updateDoc(userDocRef, { displayName: userProfileData.displayName });
                         }
                     }
@@ -290,7 +285,8 @@
                         return;
                     }
                 } catch (error) {
-                    loginError.textContent = "An error occurred.";
+                    loginError.textContent = "Login failed. Check permissions or try again.";
+                    console.error("Username lookup error:", error);
                     loginError.classList.remove('hidden');
                     return;
                 }
@@ -298,7 +294,7 @@
             
             signInWithEmailAndPassword(auth, emailToLogin, password)
                 .catch(error => {
-                    loginError.textContent = "Invalid username or password.";
+                    loginError.textContent = "Invalid email or password.";
                     loginError.classList.remove('hidden');
                 });
         });
@@ -472,7 +468,6 @@
 
         userListEl.addEventListener('click', (e) => { if (e.target.classList.contains('remove-user-btn')) { setupConfirmation(e.target.dataset.id, 'user', `Remove user ${e.target.dataset.email}?`); }});
         
-        // MODIFIED: Corrected the bug in the delete logic
         confirmRemoveBtn.addEventListener('click', async () => { 
             if (itemToDelete.id && itemToDelete.type) { 
                 try { 
@@ -486,7 +481,6 @@
                 } 
             } 
         });
-
         const resetVendorModal = () => { addVendorForm.reset(); initializeVehicleForm(); delete addVendorForm.dataset.editingId; modalTitleEl.textContent = 'Add New Vendor'; submitVendorBtn.textContent = 'Save Vendor'; countryCodeSelect.value = '91'; }
         openModalBtn.addEventListener('click', () => { resetVendorModal(); openModal(vendorModal); }); 
         closeModalBtn.addEventListener('click', () => closeModal(vendorModal));
@@ -504,7 +498,7 @@
                 for (const country of sortedCodes) { if (vendorToEdit.whatsappNumber.startsWith(`+${country.code}`)) { countryCodeSelect.value = country.code; whatsappNumberInput.value = vendorToEdit.whatsappNumber.substring(country.code.length + 1); foundCode = true; break; } }
                 if (!foundCode) whatsappNumberInput.value = vendorToEdit.whatsappNumber;
             }
-            if (vendorToEdit.vehicleTypes && vendorToEdit.vehicleTypes.length > 0) { vendorToEdit.vehicleTypes.forEach(vehicle => { const standardCheckbox = document.querySelector(`.vehicle-type-checkbox[data-type="${vehicle.type}"]`); if (standardCheckbox) { standardCheckbox.checked = true; const countInput = document.querySelector(`input[data-type-count="${vehicle.type}"]`); countInput.disabled = false; countInput.value = vehicle.count; } else { tempCustomVehicles.push({ type: vehicle.type, count: vehicle.count }); } }); renderCustomVehicleTags(); }
+            if (vendorToEdit.vehicleTypes && vendorToEdit.vehicleTypes.length > 0) { vendorToEdit.vehicleTypes.forEach(vehicle => { const standardCheckbox = document.querySelector(`.vehicle-type-checkbox[data-type="${vehicle.type}"]`); if (standardCheckbox) { standardCheckbox.checked = true; const countInput = document.querySelector(`input[data-type-count="${type}"]`); countInput.disabled = false; countInput.value = vehicle.count; } else { tempCustomVehicles.push({ type: vehicle.type, count: vehicle.count }); } }); renderCustomVehicleTags(); }
             openModal(vendorModal);
         }
         exportBtn.addEventListener('click', () => {
