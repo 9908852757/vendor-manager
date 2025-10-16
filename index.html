@@ -84,8 +84,8 @@
             <h1 class="text-3xl font-bold text-center text-white mb-6">Dashboard Access</h1>
             <form id="login-form">
                 <div class="mb-4">
-                    <label for="login-identifier" class="block text-sm font-medium text-gray-400 mb-1">Username or Email</label>
-                    <input type="text" id="login-identifier" class="block w-full px-4 py-2.5 inset-input" required>
+                    <label for="email" class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                    <input type="email" id="email" class="block w-full px-4 py-2.5 inset-input" required>
                 </div>
                 <div class="mb-6">
                     <label for="password" class="block text-sm font-medium text-gray-400 mb-1">Password</label>
@@ -266,33 +266,14 @@
             }
         });
 
-        loginForm.addEventListener('submit', async (e) => {
+        // MODIFIED: This is the secure, email-only login logic.
+        loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             loginError.classList.add('hidden');
-            const identifier = document.getElementById('login-identifier').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            let emailToLogin = identifier;
-
-            if (!identifier.includes('@')) {
-                const q = query(collection(db, "users"), where("displayName", "==", identifier));
-                try {
-                    const querySnapshot = await getDocs(q);
-                    if (!querySnapshot.empty) {
-                        emailToLogin = querySnapshot.docs[0].data().email;
-                    } else {
-                        loginError.textContent = "Invalid username or password.";
-                        loginError.classList.remove('hidden');
-                        return;
-                    }
-                } catch (error) {
-                    loginError.textContent = "Login failed. Check permissions or try again.";
-                    console.error("Username lookup error:", error);
-                    loginError.classList.remove('hidden');
-                    return;
-                }
-            }
             
-            signInWithEmailAndPassword(auth, emailToLogin, password)
+            signInWithEmailAndPassword(auth, email, password)
                 .catch(error => {
                     loginError.textContent = "Invalid email or password.";
                     loginError.classList.remove('hidden');
